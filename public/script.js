@@ -1,78 +1,60 @@
-import express from "express";
-import fetch from "node-fetch";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
+async function generateResponses() {
+    const input = document.getElementById('userPrompt').value.trim();
+    const btn = document.getElementById('generateBtn');
+    const loader = document.getElementById('loadingBar');
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+    if (!input) {
+        alert("Please enter a message!");
+        return;
+    }
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+    // लोडिंग एनीमेशन शुरू करें
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span class="btn-text">Processing...</span>`;
+    btn.disabled = true;
+    loader.style.display = "block";
 
-// क्लाइंट्स को public फोल्डर की वेबसाइट दिखाना
-app.use(express.static(path.join(__dirname, "public")));
+    document.getElementById('resp1').innerText = "Generating...";
+    document.getElementById('resp2').innerText = "Generating...";
+    document.getElementById('resp3').innerText = "Generating...";
 
-const API_KEY = process.env.GROQ_API_KEY;
-
-app.post("/generate", async (req, res) => {
     try {
-        const userInput = req.body.message;
-
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        const response = await fetch("/generate", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${API_KEY}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                model: "llama-3.1-8b-instant",
-                // Strict JSON Output
-                response_format: { type: "json_object" }, 
-                messages: [
-                    {
-                        role: "system",
-                        content: `You are an elite AI Language Expert and Executive Assistant for 'Vishwakarma Cyber Technologies'. You have TWO main jobs based on what the user types:
-
-JOB 1 (Vocabulary/Synonyms): If the user types just a single word or a very short phrase (e.g., "teacher", "good", "happy"), you must provide 3 highly professional, advanced, or impressive alternative words/synonyms for it.
-
-JOB 2 (Message Drafting): If the user types a sentence or asks you to write/draft a message (e.g., "draft a msg to my clint", "hii im founed of xyz"), act as an expert copywriter. CRITICAL: The user will make spelling mistakes (e.g., 'founed' -> 'founder', 'clint' -> 'client', 'mag' -> 'message'). IGNORE the typos, figure out their true intent, and write 3 highly professional, ready-to-send messages. Add emojis only if requested.
-
-STRICT RULE: You MUST ALWAYS output ONLY a valid JSON object. No conversational text.
-Format:
-{
-  "option1": "...",
-  "option2": "...",
-  "option3": "..."
-}`
-                    },
-                    {
-                        role: "user",
-                        content: `Input: "${userInput}"\n\nProvide the 3 options in the exact JSON format requested.`
-                    }
-                ],
-                temperature: 0.7,
-                max_tokens: 2048
-            })
+            body: JSON.stringify({ message: input })
         });
 
         if (!response.ok) {
-            const errorText = await response.text();
-            return res.status(response.status).json({ error: errorText });
+            const errData = await response.json();
+            throw new Error(errData.error || `HTTP Error ${response.status}`);
         }
 
         const data = await response.json();
-        res.json(data);
+        const rawText = data?.choices?.[0]?.message?.content;
+
+        if (!rawText) throw new Error("Empty response from AI");
+
+        const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+        const parsed = JSON.parse(cleaned);
+
+        document.getElementById('resp1').innerText = parsed.option1 || "No response generated.";
+        document.getElementById('resp2').innerText = parsed.option2 || "No response generated.";
+        document.getElementById('resp3').innerText = parsed.option3 || "No response generated.";
 
     } catch (error) {
-        console.error("Server Error:", error);
-        res.status(500).json({ error: "Internal server error connecting to Groq" });
+        console.error("FULL ERROR:", error);
+        document.getElementById('resp1').innerText = "Error: " + error.message;
+        document.getElementById('resp2').innerText = "Please try again or check your prompt.";
+        document.getElementById('resp3').innerText = "";
+    } finally {
+        // बटन को वापस नार्मल करें
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> <span class="btn-text">Generate</span>`;
+        btn.disabled = false;
+        loader.style.display = "none";
     }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`DSUS AI Live on port ${PORT}`));
+}
 
 function copyText(elementId) {
     const text = document.getElementById(elementId).innerText;
@@ -80,4 +62,3 @@ function copyText(elementId) {
         .then(() => alert("Message Copied Successfully!"))
         .catch(() => alert("Failed to copy."));
 }
-

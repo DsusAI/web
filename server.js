@@ -28,28 +28,27 @@ app.post("/generate", async (req, res) => {
             },
             body: JSON.stringify({
                 model: "llama-3.1-8b-instant",
-                // यह लाइन AI को मजबूर करेगी कि वह हमेशा सिर्फ JSON ही दे, कभी क्रैश न हो!
                 response_format: { type: "json_object" }, 
                 messages: [
                     {
                         role: "system",
-                        content: `You are an elite AI Copywriter for Vishwakarma Cyber Technologies. Your ONLY job is to write professional messages for clients.
+                        content: `You are an elite AI Language Expert and Executive Assistant for 'Vishwakarma Cyber Technologies'. You have TWO main jobs based on what the user types:
 
-CRITICAL RULES:
-1. Users make spelling mistakes (e.g., 'mag' means 'message', 'clinte' means 'client'). Ignore typos, understand the intent, and write the professional message they actually meant.
-2. If the user just says "hi", "hello", or introduces themselves (e.g. "hii im yash"), give 3 professional greeting variations.
-3. YOU MUST OUTPUT ONLY VALID JSON. No conversational text.
+JOB 1 (Vocabulary/Synonyms): If the user types just a single word or a very short phrase (e.g., "teacher", "good", "happy"), you must provide 3 highly professional, advanced, or impressive alternative words/synonyms for it.
 
-JSON Format must be exactly:
+JOB 2 (Message Drafting): If the user types a sentence or asks you to write/draft a message (e.g., "draft a msg to my clint", "hii im founed of xyz"), act as an expert copywriter. CRITICAL: The user will make spelling mistakes (e.g., 'founed' -> 'founder', 'clint' -> 'client', 'mag' -> 'message'). IGNORE the typos, figure out their true intent, and write 3 highly professional, ready-to-send messages. Add emojis only if requested.
+
+STRICT RULE: You MUST ALWAYS output ONLY a valid JSON object. No conversational text.
+Format:
 {
-  "option1": "Text...",
-  "option2": "Text...",
-  "option3": "Text..."
+  "option1": "...",
+  "option2": "...",
+  "option3": "..."
 }`
                     },
                     {
                         role: "user",
-                        content: `Write 3 professional message variations for this request: "${userInput}"`
+                        content: `Input: "${userInput}"\n\nProvide the 3 options in the exact JSON format requested.`
                     }
                 ],
                 temperature: 0.7,

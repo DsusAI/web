@@ -4,7 +4,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// ES Modules सेटअप
+// ES Modules का सेटअप
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -12,10 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// क्लाइंट्स को public फोल्डर की वेबसाइट दिखाना
+// यह लाइन Render को बताती है कि क्लाइंट्स को public फोल्डर की वेबसाइट दिखानी है
 app.use(express.static(path.join(__dirname, "public")));
 
-// Render क्लाउड सर्वर से API Key लेना
+// यह लाइन चुपचाप Render के डैशबोर्ड से आपकी असली API Key उठा लेगी
 const API_KEY = process.env.GROQ_API_KEY;
 
 app.post("/generate", async (req, res) => {
@@ -55,5 +55,6 @@ app.post("/generate", async (req, res) => {
     }
 });
 
+// Render जो भी पोर्ट (Port) देगा, यह उस पर चलेगा
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`DSUS AI Live on port ${PORT}`));

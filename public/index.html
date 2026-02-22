@@ -4,72 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DSUS AI | Vishwakarma Cyber Technologies</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="app-container">
-        
         <header>
             <div class="logo-area">
-                <img src="logo.jpg" alt="DSUS AI Logo" class="app-logo">
+                <img src="logo.jpg" alt="DSUS AI Logo" class="app-logo" onerror="this.src='https://via.placeholder.com/60/00d4ff/030712?text=AI'">
                 <h1>DSUS <span>AI</span></h1>
             </div>
+            <p class="tagline">By Vishwakarma Cyber Technologies</p>
         </header>
 
-        <div class="input-glass-container">
-            <div class="search-bar">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="userPrompt" placeholder="Describe your message...">
+        <div class="main-content">
+            <div class="input-glass-container">
+                <i class="fa-solid fa-sparkles spark-icon"></i>
+                <input type="text" id="userPrompt" placeholder="Ask anything or draft a message...">
+                <button id="generateBtn" onclick="generateResponses()">
+                    <i class="fa-solid fa-paper-plane"></i> <span class="btn-text">Generate</span>
+                </button>
             </div>
-            <button id="generateBtn" onclick="generateResponses()">Generate</button>
-        </div>
 
-        <div id="loadingBar" class="loader-container">
-            <div class="loader-fill"></div>
-        </div>
+            <div id="loadingBar" class="loader-container">
+                <div class="loader-fill"></div>
+            </div>
 
-        <div class="response-grid">
-            <div class="glass-card">
-                <h3>Response 1</h3>
-                <div class="content-area" id="resp1">Waiting for input...</div>
-                <div class="card-actions">
-                    <button class="icon-btn" onclick="copyText('resp1')" title="Copy to Clipboard">
-                        <i class="fa-regular fa-copy"></i>
-                    </button>
+            <div class="response-grid">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-bolt"></i> Option 1</h3>
+                        <button class="icon-btn" onclick="copyText('resp1')" title="Copy to Clipboard">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="content-area" id="resp1">Ready to assist you...</div>
                 </div>
-            </div>
 
-            <div class="glass-card">
-                <h3>Response 2</h3>
-                <div class="content-area" id="resp2">Waiting for input...</div>
-                <div class="card-actions">
-                    <button class="icon-btn" onclick="copyText('resp2')" title="Copy to Clipboard">
-                        <i class="fa-regular fa-copy"></i>
-                    </button>
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-fire"></i> Option 2</h3>
+                        <button class="icon-btn" onclick="copyText('resp2')" title="Copy to Clipboard">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="content-area" id="resp2">Ready to assist you...</div>
                 </div>
-            </div>
 
-            <div class="glass-card">
-                <h3>Response 3</h3>
-                <div class="content-area" id="resp3">Waiting for input...</div>
-                <div class="card-actions">
-                    <button class="icon-btn" onclick="copyText('resp3')" title="Copy to Clipboard">
-                        <i class="fa-regular fa-copy"></i>
-                    </button>
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-star"></i> Option 3</h3>
+                        <button class="icon-btn" onclick="copyText('resp3')" title="Copy to Clipboard">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="content-area" id="resp3">Ready to assist you...</div>
                 </div>
             </div>
         </div>
 
         <footer>
-            <p class="disclaimer">DSUS Artificial Intelligence may make mistakes so double check it.</p>
-            <p class="copyright">&copy; - All Rights Reserved</p>
-            <p class="brand">By - Vishwakarma Cyber Technologies</p>
+            <p class="disclaimer">DSUS AI can make mistakes. Please verify important information.</p>
+            <p class="brand">&copy; 2026 Vishwakarma Cyber Technologies. All Rights Reserved.</p>
         </footer>
-
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>

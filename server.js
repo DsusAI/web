@@ -4,6 +4,7 @@ import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// ES Modules का सेटअप
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -11,10 +12,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// क्लाइंट्स को public फोल्डर की वेबसाइट दिखाना
+// यह लाइन Render को बताती है कि क्लाइंट्स को public फोल्डर की वेबसाइट दिखानी है
 app.use(express.static(path.join(__dirname, "public")));
 
-// Render क्लाउड सर्वर से API Key लेना
+// यह लाइन चुपचाप Render के डैशबोर्ड से आपकी असली API Key उठा लेगी
 const API_KEY = process.env.GROQ_API_KEY;
 
 app.post("/generate", async (req, res) => {
@@ -31,17 +32,12 @@ app.post("/generate", async (req, res) => {
                 model: "llama-3.1-8b-instant",
                 messages: [
                     {
-                        // यह AI का नया 'स्मार्ट' दिमाग है!
-                        role: "system",
-                        content: "You are an expert Executive AI Assistant and Copywriter for a tech company named 'Vishwakarma Cyber Technologies'. Your job is to draft highly professional, engaging, and perfectly formatted messages for clients.\n\nCRITICAL INSTRUCTION: The user may make spelling mistakes (e.g., typing 'mag' instead of 'msg' or 'message', 'clinte' instead of 'client'). You must intelligently figure out the true intent, ignore the typos, and write what the user actually meant. Add appropriate emojis if requested.\n\nYou MUST ALWAYS return ONLY a valid JSON object containing exactly 3 options. Never add conversational text before or after the JSON."
-                    },
-                    {
                         role: "user",
-                        content: `Based on this request, write 3 professional variations of the message to send to the client:\n\nUser Request: "${userInput}"\n\nReturn ONLY valid JSON exactly in this format:\n{\n  "option1": "...",\n  "option2": "...",\n  "option3": "..."\n}`
+                        content: `Write 3 professional variations of this message:\n\n"${userInput}"\n\nReturn ONLY valid JSON:\n{\n  "option1": "...",\n  "option2": "...",\n  "option3": "..."\n}`
                     }
                 ],
                 temperature: 0.7,
-                max_tokens: 2048
+                max_tokens: 400
             })
         });
 
@@ -59,8 +55,6 @@ app.post("/generate", async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`DSUS AI Live on port ${PORT}`));ा
+// Render जो भी पोर्ट (Port) देगा, यह उस पर चलेगा
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`DSUS AI Live on port ${PORT}`));
-

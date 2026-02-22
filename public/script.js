@@ -1,60 +1,63 @@
-async function generateResponses() {
-    const input = document.getElementById('userPrompt').value.trim();
-    const btn = document.getElementById('generateBtn');
-    const loader = document.getElementById('loadingBar');
+import express from "express";
+import fetch from "node-fetch";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 
-    if (!input) {
-        alert("Please enter a message!");
-        return;
-    }
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    btn.innerText = "Processing...";
-    btn.disabled = true;
-    loader.style.display = "block";
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-    document.getElementById('resp1').innerText = "Generating...";
-    document.getElementById('resp2').innerText = "Generating...";
-    document.getElementById('resp3').innerText = "Generating...";
+// क्लाइंट्स को public फोल्डर की वेबसाइट दिखाना
+app.use(express.static(path.join(__dirname, "public")));
 
+// Render क्लाउड सर्वर से API Key लेना
+const API_KEY = process.env.GROQ_API_KEY;
+
+app.post("/generate", async (req, res) => {
     try {
-        // यह सीधे आपके लाइव क्लाउड सर्वर से बात करेगा
-        const response = await fetch("/generate", {
+        const userInput = req.body.message;
+
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
+                "Authorization": `Bearer ${API_KEY}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ message: input })
+            body: JSON.stringify({
+                model: "llama-3.1-8b-instant",
+                messages: [
+                    {
+                        // यह AI का नया 'स्मार्ट' दिमाग है!
+                        role: "system",
+                        content: "You are an expert Executive AI Assistant and Copywriter for a tech company named 'Vishwakarma Cyber Technologies'. Your job is to draft highly professional, engaging, and perfectly formatted messages for clients.\n\nCRITICAL INSTRUCTION: The user may make spelling mistakes (e.g., typing 'mag' instead of 'msg' or 'message', 'clinte' instead of 'client'). You must intelligently figure out the true intent, ignore the typos, and write what the user actually meant. Add appropriate emojis if requested.\n\nYou MUST ALWAYS return ONLY a valid JSON object containing exactly 3 options. Never add conversational text before or after the JSON."
+                    },
+                    {
+                        role: "user",
+                        content: `Based on this request, write 3 professional variations of the message to send to the client:\n\nUser Request: "${userInput}"\n\nReturn ONLY valid JSON exactly in this format:\n{\n  "option1": "...",\n  "option2": "...",\n  "option3": "..."\n}`
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 2048
+            })
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP Error ${response.status}`);
+            const errorText = await response.text();
+            return res.status(response.status).json({ error: errorText });
         }
 
         const data = await response.json();
-        const rawText = data?.choices?.[0]?.message?.content;
-
-        if (!rawText) throw new Error("Empty response from AI");
-
-        const cleaned = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
-        const parsed = JSON.parse(cleaned);
-
-        document.getElementById('resp1').innerText = parsed.option1 || "No response";
-        document.getElementById('resp2').innerText = parsed.option2 || "No response";
-        document.getElementById('resp3').innerText = parsed.option3 || "No response";
+        res.json(data);
 
     } catch (error) {
-        console.error("FULL ERROR:", error);
-        document.getElementById('resp1').innerText = "Error: Our AI engine is currently experiencing high traffic. Please try again.";
-        document.getElementById('resp2').innerText = "";
-        document.getElementById('resp3').innerText = "";
-    } finally {
-        btn.innerText = "Generate";
-        btn.disabled = false;
-        loader.style.display = "none";
+        console.error("Server Error:", error);
+        res.status(500).json({ error: "Internal server error connecting to Groq" });
     }
-}
+});
 
-function copyText(elementId) {
-    const text = document.getElementById(elementId).innerText;
-    navigator.clipboard.writeText(text).then(() => alert("Copied!")).catch(() => alert("Failed."));
-}
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`DSUS AI Live on port ${PORT}`));

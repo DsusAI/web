@@ -28,6 +28,7 @@ app.post("/generate", async (req, res) => {
             },
             body: JSON.stringify({
                 model: "llama-3.1-8b-instant",
+                // Strict JSON Output
                 response_format: { type: "json_object" }, 
                 messages: [
                     {

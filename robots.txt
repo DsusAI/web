@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dsusai.github.io/web/sitemap.xml
+Sitemap: https://dsus-ai.onrender.com/sitemap.xml
+

@@ -393,3 +393,4 @@ footer {
     .response-grid { grid-template-columns: 1fr; gap: 20px; }
     .glass-card:hover { transform: translateY(-5px); }
 }
+
